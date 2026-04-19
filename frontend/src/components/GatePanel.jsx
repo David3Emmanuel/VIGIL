@@ -1,23 +1,52 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 
 const STATUS_STYLES = {
-  STANDBY:  { label: 'STANDBY',      cls: 'border-outline text-on-surface-variant' },
-  OPEN:     { label: 'GATE OPEN',    cls: 'border-tertiary text-tertiary' },
-  DENIED:   { label: 'ACCESS DENIED', cls: 'border-error text-error' },
+  STANDBY: { label: 'STANDBY', cls: 'border-outline text-on-surface-variant' },
+  OPEN: { label: 'GATE OPEN', cls: 'border-tertiary text-tertiary' },
+  DENIED: { label: 'ACCESS DENIED', cls: 'border-error text-error' },
 }
 
 export function GatePanel({ gateStatus, onGateStatusChange }) {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
+  const streamRef = useRef(null)
   const [capturing, setCapturing] = useState(false)
   const [demoMode, setDemoMode] = useState(false)
+  const [cameras, setCameras] = useState([])
+  const [activeCameraId, setActiveCameraId] = useState(null)
+
+  const startCamera = useCallback(async (deviceId) => {
+    // Stop any existing stream first
+    streamRef.current?.getTracks().forEach((t) => t.stop())
+
+    const constraints = { video: deviceId ? { deviceId: { exact: deviceId } } : true }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      streamRef.current = stream
+      if (videoRef.current) videoRef.current.srcObject = stream
+
+      // Enumerate cameras after permission is granted (browsers require this order)
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      const videoInputs = devices.filter((d) => d.kind === 'videoinput')
+      setCameras(videoInputs)
+
+      // Track which camera is active
+      const activeTrack = stream.getVideoTracks()[0]
+      setActiveCameraId(activeTrack?.getSettings()?.deviceId ?? deviceId)
+    } catch {
+      setDemoMode(true)
+    }
+  }, [])
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => { if (videoRef.current) videoRef.current.srcObject = stream })
-      .catch(() => setDemoMode(true))
-  }, [])
+    startCamera(null)
+    return () => streamRef.current?.getTracks().forEach((t) => t.stop())
+  }, [startCamera])
+
+  const handleCameraSwitch = (deviceId) => {
+    setActiveCameraId(deviceId)
+    startCamera(deviceId)
+  }
 
   const postCapture = async (blob) => {
     setCapturing(true)
@@ -55,7 +84,7 @@ export function GatePanel({ gateStatus, onGateStatusChange }) {
   const status = STATUS_STYLES[gateStatus] ?? STATUS_STYLES.STANDBY
 
   return (
-    <div className="flex flex-col space-y-6">
+    <div className="flex flex-col space-y-3 sm:space-y-6">
       {/* Panel header */}
       <div className="bg-surface-container border-l-2 border-error p-4 flex justify-between items-center hud-shadow">
         <div className="flex items-center space-x-2 text-on-surface">
@@ -80,7 +109,6 @@ export function GatePanel({ gateStatus, onGateStatusChange }) {
         )}
         <canvas ref={canvasRef} className="hidden" />
         <div className="absolute inset-0 scanlines pointer-events-none" />
-        {/* HUD corners */}
         <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary m-2" />
         <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary m-2" />
         <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary m-2" />
@@ -102,6 +130,25 @@ export function GatePanel({ gateStatus, onGateStatusChange }) {
             {status.label}
           </div>
         </div>
+
+        {/* Camera selector — only shown when multiple cameras available */}
+        {cameras.length > 1 && (
+          <div className="flex flex-col space-y-1">
+            <span className="text-on-surface-variant text-[10px] tracking-widest uppercase">Input Source</span>
+            <select
+              value={activeCameraId ?? ''}
+              onChange={(e) => handleCameraSwitch(e.target.value)}
+              className="bg-surface-container-lowest border border-outline-variant text-on-surface text-xs focus:ring-0 focus:border-primary focus:bg-surface-bright p-2 w-full"
+            >
+              {cameras.map((cam, i) => (
+                <option key={cam.deviceId} value={cam.deviceId}>
+                  {cam.label || `Camera ${i + 1}`}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <button
           onClick={demoMode ? handleDemoCapture : handleCapture}
           disabled={capturing}
