@@ -24,35 +24,35 @@ export default function App() {
   return (
     <div className="bg-surface-dim text-on-surface h-screen flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="flex justify-between items-center w-full px-6 h-16 bg-[#0e1322] border-b border-[#3c494e]/15 z-50 flex-shrink-0">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-[#00d4ff] font-black tracking-tighter text-2xl uppercase italic">VIGIL</h1>
-          <span className="text-on-surface-variant text-xs tracking-[0.1em] uppercase hidden md:inline-block">
+      <header className="flex justify-between items-center w-full px-3 sm:px-6 h-12 sm:h-16 bg-[#0e1322] border-b border-[#3c494e]/15 z-50 flex-shrink-0">
+        <div className="flex items-center space-x-3">
+          <h1 className="text-[#00d4ff] font-black tracking-tighter text-xl sm:text-2xl uppercase italic">VIGIL</h1>
+          <span className="text-on-surface-variant text-xs tracking-[0.1em] uppercase hidden lg:inline-block">
             Visual Intelligence for Gated Infrastructure &amp; Landmark Security
           </span>
         </div>
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center text-primary space-x-2">
+        <div className="flex items-center space-x-2 sm:space-x-6">
+          <div className="hidden sm:flex items-center text-primary space-x-2">
             <span className="material-symbols-outlined text-sm">location_on</span>
-            <span className="font-label text-sm uppercase tracking-[0.1em]">Lekki Phase 1, Lagos, Nigeria</span>
+            <span className="font-label text-xs sm:text-sm uppercase tracking-[0.1em] whitespace-nowrap">Lekki Phase 1, Lagos</span>
           </div>
-          <div className="flex items-center text-primary space-x-2">
-            <span className="material-symbols-outlined text-sm">schedule</span>
+          <div className="flex items-center text-primary space-x-1 sm:space-x-2">
+            <span className="material-symbols-outlined text-sm hidden sm:inline">schedule</span>
             <LiveClock />
           </div>
-          <div className="flex space-x-4">
-            <button className="text-[#3c494e] hover:bg-[#2f3445] hover:text-[#a8e8ff] transition-colors duration-150 p-2 cursor-pointer">
-              <span className="material-symbols-outlined">sensors</span>
+          <div className="flex space-x-1 sm:space-x-4">
+            <button onClick={() => showToast('SENSORS')} className="text-[#3c494e] hover:bg-[#2f3445] hover:text-[#a8e8ff] transition-colors duration-150 p-1 sm:p-2 cursor-pointer">
+              <span className="material-symbols-outlined text-xl">sensors</span>
             </button>
-            <button className="text-[#3c494e] hover:bg-[#2f3445] hover:text-[#a8e8ff] transition-colors duration-150 p-2 cursor-pointer">
-              <span className="material-symbols-outlined">account_circle</span>
+            <button onClick={() => showToast('ACCOUNT')} className="text-[#3c494e] hover:bg-[#2f3445] hover:text-[#a8e8ff] transition-colors duration-150 p-1 sm:p-2 cursor-pointer">
+              <span className="material-symbols-outlined text-xl">account_circle</span>
             </button>
           </div>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Sidebar */}
+        {/* Sidebar — hidden on mobile */}
         <nav className="hidden md:flex flex-col z-40 bg-[#1a1f2f] w-16 xl:w-64 border-r border-[#3c494e]/15 flex-shrink-0">
           <div className="p-4 border-b border-[#3c494e]/15 xl:flex flex-col items-start hidden">
             <span className="text-[#00d4ff] text-[10px] tracking-[0.1em] font-bold">OP_CENTER</span>
@@ -84,10 +84,10 @@ export default function App() {
         </nav>
 
         {/* Main grid */}
-        <main className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 overflow-y-auto bg-surface-dim">
+        <main className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 p-3 sm:p-6 overflow-y-auto bg-surface-dim">
           <GatePanel gateStatus={gateStatus} onGateStatusChange={setGateStatus} />
           <ResidentPanel onGateDecision={setGateStatus} />
-          <div className="flex flex-col space-y-6">
+          <div className="flex flex-col space-y-3 sm:space-y-6">
             <ThreatPanel onThreatDetected={handleThreatDetected} />
             <AlertCascade incident={detectedThreat} triggerCount={cascadeTrigger} />
           </div>
@@ -95,7 +95,7 @@ export default function App() {
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-surface-container-highest border border-outline-variant/40 text-on-surface-variant text-xs tracking-widest uppercase px-5 py-3 hud-shadow">
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-surface-container-highest border border-outline-variant/40 text-on-surface-variant text-xs tracking-widest uppercase px-4 sm:px-5 py-2 sm:py-3 hud-shadow whitespace-nowrap">
           {toast} — to be implemented
         </div>
       )}
@@ -112,5 +112,5 @@ function LiveClock() {
     )
     return () => clearInterval(id)
   }, [])
-  return <span className="font-label text-sm uppercase tracking-[0.1em] font-bold">{time} WAT</span>
+  return <span className="font-label text-xs sm:text-sm uppercase tracking-[0.1em] font-bold whitespace-nowrap">{time} WAT</span>
 }
