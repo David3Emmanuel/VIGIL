@@ -33,7 +33,8 @@ export function GatePanel({ gateStatus, onGateStatusChange }) {
       // Track which camera is active
       const activeTrack = stream.getVideoTracks()[0]
       setActiveCameraId(activeTrack?.getSettings()?.deviceId ?? deviceId)
-    } catch {
+    } catch (err) {
+      console.error('Camera error:', err.name, err.message)
       setDemoMode(true)
     }
   }, [])
