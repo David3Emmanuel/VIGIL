@@ -53,7 +53,7 @@ export function ResidentPanel({ onGateDecision }) {
           <span className="material-symbols-outlined text-tertiary">notifications</span>
           <h2 className="font-headline font-bold text-sm tracking-[0.1em] uppercase">Resident Notifications</h2>
         </div>
-        <div className="w-2 h-2 bg-tertiary shadow-[0_0_8px_rgba(106,247,186,0.8)] animate-pulse" />
+        <div className="w-2 h-2 bg-tertiary shadow-[0_0_4px_rgba(106,247,186,0.4)] animate-pulse" />
       </div>
 
       {/* Notification cards */}

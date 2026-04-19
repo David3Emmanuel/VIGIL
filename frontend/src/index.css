@@ -8,7 +8,7 @@ body { font-family: 'Space Grotesk', monospace; }
   background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
   background-size: 100% 4px;
 }
-.hud-shadow { box-shadow: 0 20px 40px rgba(0, 212, 255, 0.08); }
+.hud-shadow { box-shadow: 0 8px 20px rgba(0, 212, 255, 0.04); }
 .glass-panel { background: rgba(47, 52, 69, 0.6); backdrop-filter: blur(20px); }
 .ghost-border { border: 1px solid rgba(60, 73, 78, 0.15); }
 
