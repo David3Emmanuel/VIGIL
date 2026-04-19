@@ -9,6 +9,12 @@ export default function App() {
   const [detectedThreat, setDetectedThreat] = useState(null)
   const [cascadeTrigger, setCascadeTrigger] = useState(0)
   const [gateStatus, setGateStatus] = useState('STANDBY')
+  const [toast, setToast] = useState(null)
+
+  const showToast = (label) => {
+    setToast(label)
+    setTimeout(() => setToast(null), 2500)
+  }
 
   const handleThreatDetected = (threat) => {
     setDetectedThreat(threat)
@@ -63,14 +69,14 @@ export default function App() {
               { icon: 'hub', label: 'NETWORK_MAP' },
               { icon: 'inventory_2', label: 'ARCHIVE' },
             ].map(({ icon, label }) => (
-              <a key={label} className="flex items-center space-x-4 p-4 text-[#a8e8ff]/60 hover:text-[#a8e8ff] hover:bg-[#1a1f2f] transition-all duration-200 group" href="#">
+              <a key={label} onClick={(e) => { e.preventDefault(); showToast(label) }} className="flex items-center space-x-4 p-4 text-[#a8e8ff]/60 hover:text-[#a8e8ff] hover:bg-[#1a1f2f] transition-all duration-200 group cursor-pointer" href="#">
                 <span className="material-symbols-outlined">{icon}</span>
                 <span className="uppercase tracking-[0.1em] text-[10px] hidden xl:inline-block">{label}</span>
               </a>
             ))}
           </div>
           <div className="p-4 mt-auto">
-            <button className="w-full text-center py-2 px-2 border border-primary/20 text-primary uppercase text-[10px] tracking-[0.1em] hover:bg-surface-variant transition-colors flex items-center justify-center space-x-2">
+            <button onClick={() => showToast('INITIATE_SCAN')} className="w-full text-center py-2 px-2 border border-primary/20 text-primary uppercase text-[10px] tracking-[0.1em] hover:bg-surface-variant transition-colors flex items-center justify-center space-x-2">
               <span className="material-symbols-outlined text-sm">radar</span>
               <span className="hidden xl:inline-block">INITIATE_SCAN</span>
             </button>
@@ -87,6 +93,12 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-surface-container-highest border border-outline-variant/40 text-on-surface-variant text-xs tracking-widest uppercase px-5 py-3 hud-shadow">
+          {toast} — to be implemented
+        </div>
+      )}
     </div>
   )
 }
